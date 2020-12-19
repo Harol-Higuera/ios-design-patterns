@@ -218,7 +218,153 @@ public class MenuViewController: UIViewController {
 
 1. To break up large classes or create reusable components.
 2. In Apple frameworks datasources and delagates both use this pattern. (FYI, Datasources have delegate methods to **provide** data and delegates have delegates methods that **receive** data).
+---
+## Strategy Pattern
 
+<pre>
+🥎 This pattern defines a family of interchangeable objects that can be set or switch at runtime.
+🥎 This pattern is similar to the Delegate pattern but, instead of defining one delegate we have a family of objects.
+</pre>
+
+<img src="./resources/15.png" width="300"/> 
+
+This pattern has 3 parts.
+
+1. **The object using the strategy:** Usually is a ViewController or any class that requires interchangeable behavior.
+2. **Strategy Protocol:** Protocol that define the methods of the strategy.
+3. **Strategies:** Objects that conform to the Strategy Protocol.
+
+### When should we use it?
+
+- When we have two or more interchangeable behaviors.
+- When we need to interchange them at runtime.
+
+### Basic Example
+
+The following example shows this pattern in action, basically the strategies are helper classes that conform to the same protocol which means that the protocol methods will be the same but the logic in each strategy is different according to the needs. 
+
+```
+// MARK: - Strategy Protocol
+public protocol MovieRatingStrategy {
+  
+  var ratingServiceName: String { get }
+  
+  func fetchRating(for movieTitle: String,
+                   success: (_ rating: String, _ review: String) -> ())
+}
+
+// MARK: - Strategy 1
+public class RottenTomatoesClient: MovieRatingStrategy {
+  public let ratingServiceName = "Rotten Tomatoes"
+  
+  public func fetchRating(
+    for movieTitle: String,
+    success: (_ rating: String, _ review: String) -> ()) {
+    
+    // In a real service, you'd make a network request...
+    // Here, we just provide dummy values...
+    let rating = "95%"
+    let review = "It rocked!"
+    success(rating, review)
+  }
+}
+
+// MARK: - Strategy 2
+public class IMDbClient: MovieRatingStrategy {
+  public let ratingServiceName = "IMDb"
+  
+  public func fetchRating(
+    for movieTitle: String,
+    success: (_ rating: String, _ review: String) -> ()) {
+    
+    let rating = "3 / 10"
+    let review = """
+      It was terrible! The audience was throwing rotten
+      tomatoes!
+      """
+    success(rating, review)
+  }
+}
+
+import UIKit
+
+// MARK: - Object Using the Strategy
+public class MoviewRatingViewController: UIViewController {
+  
+  // MARK: - Properties
+  public var movieRatingClient: MovieRatingStrategy!
+  
+  // MARK: - Outlets
+  @IBOutlet public var movieTitleTextField: UITextField!
+  @IBOutlet public var ratingServiceNameLabel: UILabel!
+  @IBOutlet public var ratingLabel: UILabel!
+  @IBOutlet public var reviewLabel: UILabel!
+  
+  // MARK: - View Lifecycle
+  public override func viewDidLoad() {
+    super.viewDidLoad()
+    ratingServiceNameLabel.text =
+      movieRatingClient.ratingServiceName
+  }
+  
+  // MARK: - Actions
+  @IBAction public func searchButtonPressed(sender: Any) {
+    guard let movieTitle = movieTitleTextField.text
+      else { return }
+    
+    movieRatingClient.fetchRating(for: movieTitle) {
+      (rating, review) in
+      self.ratingLabel.text = rating
+      self.reviewLabel.text = review
+    }
+  }
+}
+```
+
+---
+## Singleton Pattern
+
+<pre>
+🥎 This pattern restricts a class to a single instance. Every reference to the class refers to the same underlined instance.
+</pre>
+
+<img src="./resources/16.png" width="200"/> 
+
+### When should we use it?
+
+- When it makes sense to have a shared instance of the same class alive all the time and available from any other class.
+- Sometimes is useful to have share instance but with a bit of difference. In this case a singleton with custom instances capability could be created. This is called Singleton Plus.
+
+### Basic Example
+
+```
+// MARK: - Singleton
+public class MySingleton {
+  static let shared = MySingleton()
+  private init() { }
+}
+
+let mySingleton = MySingleton.shared
+
+
+// MARK: - Singleton Plus
+
+public class MySingletonPlus {
+  static let shared = MySingletonPlus()
+  public init() { }
+}
+
+let singletonPlus = MySingletonPlus.shared
+let singletonPlus2 = MySingletonPlus()
+```
+
+### Cautions
+
+- Be careful, this pattern is very easy to be overused. **Don't make it the first option to accomplish a task.**
+- Don't use it for passing data.
+- Singletons make testing harder.
+- Be aware of "code smells" indicating you don't need a singleton.
+- SIngleton Plus might not be a good idea. Consider using simple class objects.
 
 
 
