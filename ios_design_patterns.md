@@ -1,5 +1,5 @@
 
-# Design Patterns For IOS Development
+# Design Patterns For iOS Development
 
 _This article is informative and does not have the purpose to strictly motivate developers to follow this patterns for the development of iOS applications. Neither to memorize the names mentioned in this article. However, it might be a good idea to understand them and considering using them for your particular problems._
 
@@ -89,9 +89,136 @@ MVC is the Apple design pattern in the UIKit.
 - **Controller**: Coordinates between Model and Views. Usually subclasses of UIViewController.
 
 ### Some rules
-* Controllers are allowed to have strong properties for the Model or View so they can access directly.
+* Controllers are allowed to hold strong properties for the Model or View so they can access directly.
 * Controllers might have one or more Models and/or Views.
-* Models and Views should not hold a strong reference of the ViewController. Instead Model communicate to the Controllers through Property Observers and Views communicate to Controller by IBActions.
+* Models and Views should not hold a strong reference of the ViewController. Instead Model communicate to the Controllers through Property Observers and Views communicate to Controller by IBActions. 
+* Models and Views are meant to be reusable, but Controllers not because Controllers have specific logic.
+
+The following is a basic example where we illustrate that has been said. The Model is a basic struct that hold the data. A view could be any subclass of UIView, it is reusable. The View Controller holds a strong reference of the Model and the View, but no one owns it. The communication between the components is clear. The controller modifies the view and the model directly. The View talks to the Controller by IBActions, the View Could talk to the Controller by observers or delegates, but it will come later in this article.
+
+```
+// MARK: - Model
+public struct Address {
+  public var street: String
+  public var city: String
+  public var state: String
+  public var zipCode: String
+}
+
+// MARK: - View
+public final class AddressView: UIView {
+  @IBOutlet public var streetTextField: UITextField!
+  @IBOutlet public var cityTextField: UITextField!
+  @IBOutlet public var stateTextField: UITextField!
+  @IBOutlet public var zipCodeTextField: UITextField!
+}
+
+// MARK: - Controller
+public final class AddressViewController: UIViewController {
+  
+  // MARK: - Properties
+  public var address: Address? {
+    didSet {
+      updateViewFromAddress()
+    }
+  }
+  public var addressView: AddressView! {
+    guard isViewLoaded else { return nil }
+    return (view as! AddressView)
+  }
+  
+  // MARK: - View Lifecycle
+  public override func viewDidLoad() {
+    super.viewDidLoad()
+    updateViewFromAddress()
+  }
+  
+  private func updateViewFromAddress() {
+    guard let addressView = addressView,
+      let address = address else { return }
+    addressView.streetTextField.text = address.street
+    addressView.cityTextField.text = address.city
+    addressView.stateTextField.text = address.state
+    addressView.zipCodeTextField.text = address.zipCode
+  }
+  
+  // MARK: - Actions
+  @IBAction public func updateAddressFromView(_ sender: AnyObject) {
+    guard let street = addressView.streetTextField.text, street.count > 0,
+      let city = addressView.cityTextField.text, city.count > 0,
+      let state = addressView.stateTextField.text, state.count > 0,
+      let zipCode = addressView.zipCodeTextField.text, zipCode.count > 0
+      else {
+        // TO-DO: show an error message, handle the error, etc
+        return
+    }
+    address = Address(street: street, city: city,
+                      state: state, zipCode: zipCode)
+  }
+}
+
+```
+
+### Considerations
+
+```
+- Not every object fits into Model, View or Controller.
+- Be careful about controllers growing too big.
+- Use other patterns as needed.
+```
+---
+## Delegation Pattern
+
+<pre>
+🥎 This pattern enables an object to use another helper object to provide data or perform a task rather than doing it itself.
+🥎 The core purpose of the delegate pattern is to allow an object to communicate back to its owner in a decoupled way. By not requiring an object to know the concrete type of its owner, we can write code that is much easier to reuse and maintain.
+</pre>
+
+The delegation pattern has 3 parts:
+- **Delegating Object:** The object that has the Delegate. The delegate is usually held in the delegating object as **weak property** to avoid a retain cycle where the delegating object retains the delegate which retains the delegating object.
+- **Delegate Protocol:** Defines the methods that the Delegate might implement. 
+- **Delegate:** The Helper Object that implements the Delegate Protocol.
+
+<img src="./resources/14.png" height="100"/> 
+
+### Basic example
+```
+// MARK: - Delegate
+public class MainViewController: UIViewController {
+    public override func viewDidLoad() {
+        // Instantiate a MainViewController
+        let vc = MenuViewController()
+        vc.delegate = self
+        navigationController?.pushViewController(vc, animated: true)
+    }
+}
+extension MainViewController: MenuViewControllerDelegate {
+    public func menuViewController(didRequestAFavour index: Int) {
+        // Here I use index and do some task for MenuViewController.
+    }
+}
+
+// MARK: - Delegate Protocol
+public protocol MenuViewControllerDelegate: class {
+    func menuViewController(didRequestAFavour index: Int)
+}
+
+// MARK: - Delegating Object
+public class MenuViewController: UIViewController {
+
+  public weak var delegate: MenuViewControllerDelegate?
+
+  @IBAction public func updateAddressFromView(_ sender: AnyObject) {
+    delegate?.menuViewController(didRequestAFavour: 1)
+  }
+}
+```
+
+### When should we use it?
+
+1. To break up large classes or create reusable components.
+2. In Apple frameworks datasources and delagates both use this pattern. (FYI, Datasources have delegate methods to **provide** data and delegates have delegates methods that **receive** data).
+
 
 
 
