@@ -1,7 +1,7 @@
 
 # Design Patterns For iOS Development
 
-_This article is informative and does not have the purpose to strictly motivate developers to follow this patterns for the development of iOS applications. Neither to memorize the names mentioned in this article. However, it might be a good idea to understand them and considering using them for your particular problems._
+_This article is informative and does not have the purpose to strictly motivate developers to follow this patterns for the development of iOS applications. However, it might be a good idea to understand them and considering using them for your particular problems._
 
 ### Types of Design Patterns.
 
@@ -22,13 +22,13 @@ _This article is informative and does not have the purpose to strictly motivate 
 ---
 ## Class Diagrams
 
-As in this article, class diagrams are very useful for understanding Design patterns, so go through the require concepts that you already might be familiar with.
+As in this article, class diagrams are very useful for understanding Design patterns, so let's go through the require concepts that you already might be familiar with.
 
 Class Diagrams include Classes, protocols, properties, methods and relationships.
 
 Here is a class that we called Dog and a subclass SheepDog, in a class diagrams instead of saying _SheepDog inherits from Dog_ we can simply say _SheepDog is a Dog_. Makes sense right? The direction of the arrow defines de relationship. The arrows always point at the super class.
 
-<img src="./resources/01.png" width="200"/> 
+<img src="./resources/01.png" width="150"/> 
 
 To indicate that a class has a property, we can use a plain arrow and it would be read as "has a". If there are multiple properties it could be read as "has one or more.."
 
@@ -36,23 +36,23 @@ To indicate that a class has a property, we can use a plain arrow and it would b
 
 Also, we could indicate multiple relationships in a single diagram.
 
-<img src="./resources/03.png" width="200"/> 
+<img src="./resources/03.png" width="300"/> 
 
 Now, when we define a protocol, the right way would be adding a label "Protocol" surrounded by double brackets. 
 
-<img src="./resources/04.png" width="200"/> 
+<img src="./resources/04.png" width="150"/> 
 
 This is the way we could add a class diagram to define a class that implements OR conforms to a protocol. 
 
-<img src="./resources/05.png" width="200"/> 
+<img src="./resources/05.png" width="150"/> 
 
 But hold on. If we want to indicate "uses", we use a plain arrow and a dashed line. This is a relationship for **usage**, which means that indicates its purpose. 
 
-<img src="./resources/06.png" height="120"/> 
+<img src="./resources/06.png" height="90"/> 
 
 We can add also add methods and properties in a class diagram.
 
-<img src="./resources/07.png" height="200"/> 
+<img src="./resources/07.png" height="150"/> 
 
 Here it is a complete class diagram for a Farmer who has a SheepDog which is a Dog that delegates to the PetOwning object.
 
@@ -62,17 +62,17 @@ Here it is a complete class diagram for a Farmer who has a SheepDog which is a D
 
 1. Dog and Cat inherit from Animal, which defines an eat method.
 
-<img src="./resources/09.png" height="200"/> 
+<img src="./resources/09.png" height="150"/> 
 
 2. Vehicle protocol has one Motor and one or more Wheel objects. Note that since the vehicle has one or more wheels an 1...* is added.
 
-<img src="./resources/10.png" height="200"/> 
+<img src="./resources/10.png" height="150"/> 
 
 3. Professor is a teacher and conforms to a Person protocol. This is a bit ambiguous, so there could be two options. In the option 1 the Professor conforms to Person and Teacher also conforms to Person. In Option 2 Teacher does not conforms to Person.
 
 Option 1 | Option 2
 ------------ | -------------
-<img src="./resources/11.png" height="200"/>  | <img src="./resources/12.png" height="200"/> 
+<img src="./resources/11.png" height="200"/>  | <img src="./resources/12.png" height="150"/> 
 
 ---
 ## MVC (Model-View-Controller)
@@ -94,7 +94,7 @@ MVC is the Apple design pattern in the UIKit.
 * Models and Views should not hold a strong reference of the ViewController. Instead Model communicate to the Controllers through Property Observers and Views communicate to Controller by IBActions. 
 * Models and Views are meant to be reusable, but Controllers not because Controllers have specific logic.
 
-The following is a basic example where we illustrate that has been said. The Model is a basic struct that hold the data. A view could be any subclass of UIView, it is reusable. The View Controller holds a strong reference of the Model and the View, but no one owns it. The communication between the components is clear. The controller modifies the view and the model directly. The View talks to the Controller by IBActions, the View Could talk to the Controller by observers or delegates, but it will come later in this article.
+The following is a basic example where we illustrate what has been said. The Model is a basic struct that holds the data. A view could be any subclass of UIView, it is reusable. The View Controller holds a strong reference of the Model and the View, but no one owns it. The communication between the components is clear. The controller modifies the view and the model directly. The View talks to the Controller by IBActions, the View Could talk to the Controller by observers or delegates, but it will come later in this article.
 
 ```
 // MARK: - Model
@@ -499,3 +499,147 @@ user.name = "Ray has left the building"
 - Don't use on simple models or properties that never change.
 - Be sure about what to expect to change and when.
 
+## Builder Pattern
+
+<pre>
+🥎 This pattern allows us to create complex objects by providing inputs step by step instead of requiring all the inputs upfront in the initializer.
+🥎 Use it when building a product that requires multiple inputs. 
+🥎 If the product does have several inputs or cannot be created step by step it is better to use convenient initializers with default values.
+</pre>
+
+<img src="./resources/19.png" height="230"/> 
+
+This pattern involved 3 types.
+- **Director:** Accepts inputs and coordinates with the builder. Usually a view controller or a helper class that is used by the view controller.
+- **Product:** The complex object to be created. Could be a class or a struct.
+- **Builder:** Accepts step by step inputs and handles the creations of the products.
+
+### Basic Example
+
+The following example shows this pattern in action for a hamburger builder where the director is a chef or employee and the product is a builder. The builder object is contains the logic required to deliver fresh and delicious hamburgers. In this way the hamburger object is isolated from the complex logic that required preparing a nice burger.
+
+```
+// MARK: - Product
+public struct Hamburger {
+  public let meat: Meat
+  public let sauce: Sauces
+  public let toppings: Toppings
+}
+
+extension Hamburger: CustomStringConvertible {
+  public var description: String {
+    return meat.rawValue + " burger"
+  }
+}
+
+public enum Meat: String {
+  case beef
+  case chicken
+  case kitten
+  case tofu
+}
+
+public struct Sauces: OptionSet {
+  public static let mayonnaise = Sauces(rawValue: 1 << 0)
+  public static let mustard = Sauces(rawValue: 1 << 1)
+  public static let ketchup = Sauces(rawValue: 1 << 2)
+  public static let secret = Sauces(rawValue: 1 << 3)
+  
+  public let rawValue: Int
+  public init(rawValue: Int) {
+    self.rawValue = rawValue
+  }
+}
+
+public struct Toppings: OptionSet {
+  public static let cheese = Toppings(rawValue: 1 << 0)
+  public static let lettuce = Toppings(rawValue: 1 << 1)
+  public static let pickles = Toppings(rawValue: 1 << 2)
+  public static let tomatoes = Toppings(rawValue: 1 << 3)
+  
+  public let rawValue: Int
+  public init(rawValue: Int) {
+    self.rawValue = rawValue
+  }
+}
+
+// MARK: - Builder
+public class HamburgerBuilder {
+  
+  public enum Error: Swift.Error {
+    case soldOut
+  }
+  
+  public private(set) var meat: Meat = .beef
+  public private(set) var sauces: Sauces = []
+  public private(set) var toppings: Toppings = []
+  
+  private var soldOutMeats: [Meat] = [.kitten]
+  
+  public func addSauces(_ sauce: Sauces) {
+    sauces.insert(sauce)
+  }
+  
+  public func removeSauces(_ sauce: Sauces) {
+    sauces.remove(sauce)
+  }
+  
+  public func addToppings(_ topping: Toppings) {
+    toppings.insert(topping)
+  }
+  
+  public func removeToppings(_ topping: Toppings) {
+    toppings.remove(topping)
+  }
+  
+  public func setMeat(_ meat: Meat) throws {
+    guard isAvailable(meat) else { throw Error.soldOut }
+    self.meat = meat
+  }
+  
+  public func isAvailable(_ meat: Meat) -> Bool {
+    return !soldOutMeats.contains(meat)
+  }
+  
+  public func build() -> Hamburger {
+    return Hamburger(meat: meat,
+                     sauce: sauces,
+                     toppings: toppings)
+  }
+}
+
+// MARK: - Director
+public class Employee {
+  
+  public func createCombo1() throws -> Hamburger {
+    let builder = HamburgerBuilder()
+    try builder.setMeat(.beef)
+    builder.addSauces(.secret)
+    builder.addToppings([.lettuce, .tomatoes, .pickles])
+    return builder.build()
+  }
+  
+  public func createKittenSpecial() throws -> Hamburger {
+    let builder = HamburgerBuilder()
+    try builder.setMeat(.kitten)
+    builder.addSauces(.mustard)
+    builder.addToppings([.lettuce, .tomatoes])
+    return builder.build()
+  }
+}
+
+// MARK: - Example
+let burgerFlipper = Employee()
+
+if let combo1 = try? burgerFlipper.createCombo1() {
+  print("Nom nom " + combo1.description)
+}
+
+if let kittenBurger = try?
+  burgerFlipper.createKittenSpecial() {
+  print("Nom nom nom " + kittenBurger.description)
+  
+} else {
+  print("Sorry, no kitten burgers here... :[")
+}
+```
