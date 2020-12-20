@@ -376,5 +376,126 @@ ___
 
 <img src="./resources/17.png" height="100"/> 
 
+This patters has 3 parts.
+- **Originator:** Is the object to be saved or restored.
+- **Memento:** Represents a stored state.
+- **Care Taker:** Is responsible for persisting the memento and later on providing the memento back to the originator to restore the originator's state.
 
+### Usage 
+
+- Used to save and restore an object. For example, to implement a "save game" system.
+- By persisting an array of mementos, undo/redo stacks can me implemented.
+
+### Basic Example
+
+```
+// MARK: - Originator
+public class Game: Codable {
+  
+  public class State: Codable {
+    public var attemptsRemaining: Int = 3
+    public var level: Int = 1
+    public var score: Int = 0
+  }
+  public var state = State()
+  
+  public func rackUpMassivePoints() {
+    state.score += 9002
+  }
+  
+  public func monstersEatPlayer() {
+    state.attemptsRemaining -= 1
+  }
+}
+
+// MARK: - Memento
+typealias GameMemento = Data
+
+// MARK: - CareTaker
+public class GameSystem {
+  
+  private let decoder = JSONDecoder()
+  private let encoder = JSONEncoder()
+  private let userDefaults = UserDefaults.standard
+  
+  public func save(_ game: Game, title: String) throws {
+    let data = try encoder.encode(game)
+    userDefaults.set(data, forKey: title)
+  }
+  
+  public func load(title: String) throws -> Game {
+    guard let data = userDefaults.data(forKey: title),
+      let game = try? decoder.decode(Game.self, from: data)
+      else {
+        throw Error.gameNotFound
+    }
+    return game
+  }
+  
+  public enum Error: String, Swift.Error {
+    case gameNotFound
+  }
+}
+
+// MARK: - Example
+var game = Game()
+game.monstersEatPlayer()
+game.rackUpMassivePoints()
+
+// Save Game
+let gameSystem = GameSystem()
+try gameSystem.save(game, title: "Best Game Ever")
+
+// New Game
+game = Game()
+print("New Game Score: \(game.state.score)")
+
+// Load Game
+game = try! gameSystem.load(title: "Best Game Ever")
+print("Loaded Game Score: \(game.state.score)")
+```
+
+## Observer Pattern
+
+<pre>
+🥎 This pattern allows an object to observe changes on another object. Apple added support for this pattern in Swift 5.1 with the additional Publisher in the Combine framework.
+</pre>
+
+<img src="./resources/18.png" height="100"/> 
+
+These are the types involved in this pattern:
+- **Subscriber:** The Observer object that receives updates.
+- **Publisher:** The Observable object that sends updates.
+- **Value:** The object that is changed.
+
+### Basic Example
+
+```
+import Combine
+
+// MARK: - Publisher
+public class User {
+    // MARK: - Value
+    @Published var name: String
+    public init(name: String) {
+        self.name = name
+    }
+}
+
+// MARK: - Subscriber
+let user = User(name: "Ray")
+let publisher = user.$name
+var subscriber: AnyCancellable? = publisher.sink() {
+    print("User's name is \($0)")
+}
+
+user.name = "Vicki"
+// Set subscriber to nul to stop receiving changes
+subscriber = nil
+user.name = "Ray has left the building"
+```
+### Considerations
+- @Published annotations can be added only in a class type.
+- Don't use on simple models or properties that never change.
+- Be sure about what to expect to change and when.
 
