@@ -333,6 +333,7 @@ public class MoviewRatingViewController: UIViewController {
 ### When should we use it?
 
 - When it makes sense to have a shared instance of the same class alive all the time and available from any other class.
+- Sometimes is useful to store states on memory while using the application and not on disk.
 - Sometimes is useful to have share instance but with a bit of difference. In this case a singleton with custom instances capability could be created. This is called Singleton Plus.
 
 ### Basic Example
@@ -364,9 +365,16 @@ let singletonPlus2 = MySingletonPlus()
 - Don't use it for passing data.
 - Singletons make testing harder.
 - Be aware of "code smells" indicating you don't need a singleton.
-- SIngleton Plus might not be a good idea. Consider using simple class objects.
+- Singleton Plus might not be a good idea. Consider using simple class objects.
+___
 
+## Memento Pattern
 
+<pre>
+🥎 This pattern allows an object to be saved and restored.
+</pre>
+
+<img src="./resources/17.png" height="100"/> 
 
 
 
