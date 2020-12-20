@@ -454,7 +454,7 @@ print("New Game Score: \(game.state.score)")
 game = try! gameSystem.load(title: "Best Game Ever")
 print("Loaded Game Score: \(game.state.score)")
 ```
-
+___
 ## Observer Pattern
 
 <pre>
@@ -498,7 +498,7 @@ user.name = "Ray has left the building"
 - @Published annotations can be added only in a class type.
 - Don't use on simple models or properties that never change.
 - Be sure about what to expect to change and when.
-
+___
 ## Builder Pattern
 
 <pre>
@@ -643,3 +643,92 @@ if let kittenBurger = try?
   print("Sorry, no kitten burgers here... :[")
 }
 ```
+___
+## Model-View-View Model (MVVM)
+
+<pre>
+🥎 MVVM can be also applied as structural pattern in iOS to separate the UI from the logic.
+🥎 This pattern complements MVC well by moving transformation logic out of the view controllers.
+</pre>
+
+<img src="./resources/20.png" height="230"/> 
+
+Objects are separated into three distinct groups:
+- **Model:** Hold on to app data. Usually structs or simple classes.
+- **View:** Views display visual elements on the screen. Usually subclasses of UIView.
+- **ViewModel:** Transform model information into values that can be displayed on a view. Usually classes that can be passed as references.
+
+### Considerations
+- Use it when transformation of models into view representation is required.
+- This is a powerful pattern widely used on real iOS application. Nevertheless, it is highly recommended to use it with other patterns in real applications. 
+
+### Basic Example
+The following is a simple example of MVVM pattern, in it we can see how the data to display is obtained in the view model.
+
+```
+import PlaygroundSupport
+import UIKit
+
+// MARK: - Model
+public class PersonalInfo {
+    public let birthDate: Date
+    init(birthDate: Date) {
+        self.birthDate = birthDate
+    }
+}
+
+// MARK: - ViewModel
+public class PersonViewModel {
+    private let calendar: Calendar
+    private let personalInfo: PersonalInfo
+    public init(personalInfo: PersonalInfo,
+                calendar: Calendar = Calendar(identifier: .gregorian)) {
+      self.personalInfo = personalInfo
+      self.calendar = calendar
+    }
+    
+    public var ageText: String {
+      let today = calendar.startOfDay(for: Date())
+        let birthday = calendar.startOfDay(for: personalInfo.birthDate)
+      let components = calendar.dateComponents([.year], from: birthday, to: today)
+      let age = components.year!
+      return "\(age) years old"
+    }
+}
+
+extension PersonViewModel {
+  public func configure(_ view: PersonView) {
+    view.ageLabel.text = ageText
+  }
+}
+
+// MARK: - View
+public class PersonView: UIView {
+  public let ageLabel: UILabel
+  
+  public override init(frame: CGRect) {
+    let childFrame = CGRect(x: 0.0, y: 16.0,
+                            width: frame.width, height: frame.height / 2)
+    ageLabel = UILabel(frame: childFrame)
+    ageLabel.textAlignment = .center
+    super.init(frame: frame)
+    backgroundColor = .white
+    addSubview(ageLabel)
+  }
+  
+  @available(*, unavailable)
+  public required init?(coder: NSCoder) {
+    fatalError("Use init(frame:) instead")
+  }
+}
+
+// MARK: - Example
+let birthday = Date(timeIntervalSinceNow: -2 * 86400 * 366)
+let info = PersonalInfo(birthDate: birthday)
+let viewModel = PersonViewModel(personalInfo: info)
+let frame = CGRect(x: 0.0, y: 0.0, width: 300.0, height: 420.0)
+let view = PersonView(frame: frame)
+viewModel.configure(view)
+PlaygroundPage.current.liveView = view
+```
+
