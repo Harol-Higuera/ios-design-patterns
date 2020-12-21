@@ -748,7 +748,9 @@ This pattern only have two types:
 ### When to use it?
 - When we want to separate product creation logic, instead of having consumers create products directly.
 - It is useful when we have a group of related products such as polymorphic subclasses or several objects that implement the same protocol.
+- If the creation of an object requires a series of steps.
 
+### Basic Example
 ```
 public struct JobApplicant {
   public enum Status {
