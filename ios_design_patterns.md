@@ -741,7 +741,7 @@ ___
 
 <img src="./resources/21.png" height="180"/> 
 
-This pattern only have two types:
+This pattern involves two types:
 - **Factory:** Responsible of creating objects.
 - **Product:** The objects thar are being created.
 
@@ -822,4 +822,206 @@ print(emailFactory.createEmail(to: jackson), "\n")
 ```
 ### Considerations
 - If the objects are very simple it is not worth to use this pattern. Instead, it could be created directly in the consumer.
+
+___
+## Adapter pattern
+
+<pre>
+🥎 This patterns is a behavioral pattern that allows incompatible types to work together.
+</pre>
+
+<img src="./resources/22.png" height="250"/> 
+
+This pattern involves four components:
+- **Object using the adapter:** Depends on the new protocol.
+- **New Protocol:** The desired protocol to use. 
+- **Adapter:** What is created to conform the protocol. It passes calls onto the legacy object.
+- **Legacy Object:** Existed before the protocol was made and cannot be directly modified to conform to the new protocol.
+
+### When to use it?
+- When we cannot modified a class. Especially if it comes from a library.
+<pre>
+We can create an adapter by using an extension ot a new adapter class.
+</pre>
+
+### Basic Example
+
+```
+// MARK: - Legacy Object
+public class GoogleAuthenticator {
+  
+  public func login(email: String,
+                    password: String,
+                    completion: @escaping (GoogleUser?, Error?) -> Void) {
+    // Make networking calls, which return a special "token"
+    let token = "special-token-value"
+    let user = GoogleUser(email: email, password: password, token: token)
+    completion(user, nil)
+  }
+}
+
+public struct GoogleUser {
+  public var email: String
+  public var password: String
+  public var token: String
+}
+
+// MARK: - New Protocol
+public protocol AuthenticationService {
+  func login(email: String,
+             password: String,
+             success: @escaping (User, Token) -> Void,
+             failure: @escaping (Error?) -> Void)
+}
+
+public struct User {
+  public let email: String
+  public let password: String
+}
+
+public struct Token {
+  public let value: String
+}
+
+// MARK: - Adapter
+public class GoogleAuthenticatorAdapter: AuthenticationService {
+  
+  private var authenticator = GoogleAuthenticator()
+  
+  public func login(email: String,
+                    password: String,
+                    success: @escaping (User, Token) -> Void,
+                    failure: @escaping (Error?) -> Void) {
+    authenticator.login(email: email, password: password) { (googleUser, error) in
+      guard let googleUser = googleUser else {
+        failure(error)
+        return
+      }
+      let user = User(email: email, password: password)
+      let token = Token(value: googleUser.token)
+      success(user, token)
+    }
+  }
+}
+
+// MARK: Object Using the adapter
+let authService: AuthenticationService = GoogleAuthenticatorAdapter()
+
+authService.login(
+  email: "user@example.com",
+  password: "password",
+  success: {user, token in
+    print("Auth succeeded: \(user.email), \(token.value)")
+                    
+}, failure: {error in
+  if let error = error {
+    print("Auth failed with error: \(error)")
+  } else {
+    print("Auth failed with no error provided")
+  }
+})
+```
+
+___
+## Iterator pattern
+
+<pre>
+🥎 This patterns is a behavioral pattern provides a standard way to loop through collections.
+</pre>
+
+<img src="./resources/23.png" height="200"/> 
+
+This pattern involves four components:
+- **Swift Iterable Protocol:** Type than can be iterated using a for loop.
+- **Iterator Object:** A custom object you want to make iterable. Instead of conforming to Iterable directly, however, you can conform to Sequence, which itself conforms to Iterable. By doing so, you'll get many higher-order functions, including map, filter and more, implemented for free for you.
+
+### When to use it?
+- When we have a class or struct that holds a group of objects and we need to iterate by using a **for in loop**.
+<pre>
+Prefer to use the Sequence protocol to get higher order functions for free.
+</pre>
+
+### Basic Example
+
+The following example shows the usage of this pattern. The **Swift Iterable Protocol** is the protocol _Sequence_ and the **Iterator Object** is Queue.
+
+```
+public struct Queue<T> {
+  private var array: [T?] = []
+  private var head = 0
+  
+  public var isEmpty: Bool {
+    return count == 0
+  }
+  public var count: Int {
+    return array.count - head
+  }
+  public mutating func enqueue(_ element: T) {
+    array.append(element)
+  }
+  public mutating func dequeue() -> T? {
+    guard head < array.count,
+      let element = array[head] else {
+        return nil
+    }
+    array[head] = nil
+    head += 1
+    let percentage = Double(head)/Double(array.count)
+    if array.count > 50,
+      percentage > 0.25 {
+      array.removeFirst(head)
+      head = 0
+    }
+    return element
+  }
+}
+extension Queue: Sequence {
+  public func makeIterator() -> IndexingIterator<Array<T>> {
+    let nonEmptyValues = Array(array[head ..< array.count]) as! [T]
+    return nonEmptyValues.makeIterator()
+  }
+}
+
+public struct Ticket {
+  enum PriorityType {
+    case low
+    case medium
+    case high
+  }
+  var description: String
+  var priority: PriorityType
+}
+extension Ticket {
+  var sortIndex: Int {
+    switch self.priority {
+    case .low: return 0
+    case .medium: return 1
+    case .high: return 2
+    }
+  }
+}
+
+var queue = Queue<Ticket>()
+queue.enqueue(Ticket(description: "Wireframe Tinder for dogs", priority: .low))
+queue.enqueue(Ticket(description: "Set up 4k monitor", priority: .medium))
+queue.enqueue(Ticket(description: "There is smoke coming out of my computer",
+                     priority: .high))
+queue.enqueue(Ticket(description: "Put googly eyes on roomba", priority: .low))
+
+print("List of Tickets in queue:")
+for ticket in queue {
+  print(ticket.description)
+}
+
+let sortedTickets = queue.sorted {
+  $0.sortIndex > $1.sortIndex
+}
+print("\nSorted Tickets in queue:")
+for ticket in sortedTickets {
+  print(ticket.description)
+}
+```
+
+Read more about it. https://developer.apple.com/documentation/swift/iteratorprotocol
+
 
