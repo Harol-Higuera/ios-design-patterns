@@ -1025,3 +1025,24 @@ for ticket in sortedTickets {
 Read more about it. https://developer.apple.com/documentation/swift/iteratorprotocol
 
 
+
+
+
+
+## Questions and Answers
+N | Question | Answer
+-- | ----------- | -------------
+1 | Which pattern Data sources actually follow? | Delegation pattern
+2 | Which pattern enables us to change behaviors at runtime? | Strategy Pattern
+3 | What is the main problem with MVC? ow can we alleviate this? | Massive view controllers. Use other patterns.
+4 | When shouldn't we see the strategy pattern? | If behavior won't ever change.
+5 | Which pattern allows an object to be made via a series of steps? | Builder pattern
+6 | Which pattern allows one object to listen for changes on another? | Observer pattern
+7 | Which pattern allows objects to be saved and restored? | Memento pattern
+8 | What is the purpose of the view model? | Transforms a model into a view-representable state.
+9 | What does a factory do? | Encapsulates product creation logic in a single object. Creates products.
+10 | Which pattern should we use to make incompatible interfaces work together? | Adapter pattern.
+11 | Which pattern should we use to support for in looping? | Iterator Pattern
+12 | What happens to view controllers in MVVM? | View Controllers still exists in MVVM but the role is minimized.
+13 | What is the purpose of the subject in the observer pattern? | The subject is the object that is observed for changes.
+
