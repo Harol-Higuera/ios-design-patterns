@@ -4,47 +4,56 @@
 _This article is informative and does not have the purpose to strictly force developers to follow this patterns for the development of real iOS applications. However, it might be a good idea to understand them and considering using them for your particular problems._
 
 &nbsp;
+
 # Table of Contents
 - [Types of Design Patterns](#types-of-design-patterns)
 - [Class Diagrams](#class-diagrams)
-&nbsp;
-1. [Model View Controller](#model-view-controller)
-2. [Delegation Pattern](#delegation-pattern)
-3. [Strategy Pattern](#strategy-pattern)
-4. [Singleton Pattern](#singleton-pattern)
-5. [Memento Pattern](#memento-pattern)
-6. [Observer Pattern](#observer-pattern)
-7. [Builder Pattern](#builder-pattern)
-8. [Model View View Model](#model-view-view-model)
-9. [Factory Pattern](#factory-pattern)
-10. [Adapter Pattern](#adapter-pattern)
-11. [Iterator Pattern](#iterator-pattern)
-12. [Prototype Pattern](#prototype-pattern)
-13. [State Pattern](#state-pattern)
-14. [Multicast Pattern](#multicast-pattern)
-15. [Facade Pattern](#facade-pattern)
-&nbsp;
 - [Questions and answers](#questions-and-answers)
 
 &nbsp;
 
 ---
 ## Types of Design Patterns
+
+The design patterns described in this document are divided in three types.
+
 &nbsp;
 
-1. **Structural**: Describe how objects are combined and composed to create complex structures. 
-- MVC
-- MVVM
+<strong style="color: orange;">1. Structural</strong>: Describe how objects are combined and composed to create complex structures. 
 
-2. **Behavioral**: Describe how objects communicate with each other.
-- Delegation
-- Strategy
-- Observer
+ n| Type | Hint | Example 
+-- | ------------ | -------------  | ------------- 
+1 | [MVC](#model-view-controller) | The default Apple design pattern used in UIKit. | ViewControllers
+2 | [MVVM](#model-view-view-model) | Separates the UI from the logic. | -
+3 | [Facade](#facade-pattern) | Provides a simple interface to a complex system. | Product ordering system.
 
-3. **Creational**: Describe how to create or instantiate objects.
-- Builder
-- Singleton
-- Prototype
+&nbsp;
+
+<strong style="color: orange;">2. Behavioral</strong>: Describe how objects communicate with each other.
+
+ n| Type | Hint | Example 
+-- | ----------- | ------------- | ------------- 
+1 | [Delegation](#delegation-pattern) | Enables an object to use another helper object to provide data or perform a task rather than doing it itself. | DataSource
+2 | [Strategy](#strategy-pattern) | Interchangeable objects that can be set or switch at runtime. All can conform to the same protocol. | Movie rating mechanism.
+3 | [Observer](#observer-pattern) | Allows an object to observe changes on another object. We can use Publisher in the Combine framework. | -
+4 | [Memento](#memento-pattern) | Allows an object to be saved and restored. | Game score system.
+5 | [Adapter](#adapter-pattern) | Allows incompatible types to work together. | Authentication service.
+6 | [Iterator](#iterator-pattern) | Provides a standard way to loop through collections. | List of Tickets in a queue. 
+7 | [State](#state-pattern) | Allows an object to change its behavior on runtime. | Traffic lights.
+8 | [Multicast](#multicast-pattern) | Allows to create One to Many delegate relationships. | Emergency response system.
+
+&nbsp;
+
+<strong style="color: orange;">3. Creational</strong>: Describe how to create or instantiate objects.
+
+ n| Type | Hint | Example 
+-- | ----------- | ------------- | ------------- 
+1 | [Builder](#builder-pattern) | Allows creating complex objects by providing inputs step by step. | Making a hamburger.
+2 | [Singleton](#singleton-pattern) | Single instance. | -
+3 | [Prototype](#prototype-pattern) | Allows an object to copy itself. | Monster copy machine.
+4 | [Factory](#factory-pattern) | Allows creation of objects without exposing the creation logic. | Job application.
+
+
 
 &nbsp;
 
@@ -110,7 +119,7 @@ Option 1 | Option 2
 ## Model View Controller
 &nbsp;
 <pre>
-MVC is the Apple design pattern in the UIKit.
+🥎 MVC is the Apple design pattern in the UIKit.
 </pre>
 <img src="./resources/13.png" height="200"/> 
 
@@ -784,7 +793,7 @@ PlaygroundPage.current.liveView = view
 ## Factory Pattern
 &nbsp;
 <pre>
-🥎 This patterns allows creation of objects without exposing the creation logic.
+🥎  A creational pattern that allows creation of objects without exposing the creation logic.
 </pre>
 
 <img src="./resources/21.png" height="180"/> 
@@ -997,6 +1006,7 @@ Prefer to use the Sequence protocol to get higher order functions for free.
 The following example shows the usage of this pattern. The **Swift Iterable Protocol** is the protocol _Sequence_ and the **Iterator Object** is Queue.
 
 ```swift
+// MARK: Iterator Object
 public struct Queue<T> {
   private var array: [T?] = []
   private var head = 0
