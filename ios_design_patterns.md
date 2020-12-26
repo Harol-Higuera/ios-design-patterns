@@ -1,7 +1,7 @@
 
 # Design Patterns For iOS Development
 
-_This article is informative and does not have the purpose to strictly motivate developers to follow this patterns for the development of iOS applications. However, it might be a good idea to understand them and considering using them for your particular problems._
+_This article is informative and does not have the purpose to strictly force developers to follow this patterns for the development of real iOS applications. However, it might be a good idea to understand them and considering using them for your particular problems._
 
 ### Types of Design Patterns.
 
@@ -96,7 +96,7 @@ MVC is the Apple design pattern in the UIKit.
 
 The following is a basic example where we illustrate what has been said. The Model is a basic struct that holds the data. A view could be any subclass of UIView, it is reusable. The View Controller holds a strong reference of the Model and the View, but no one owns it. The communication between the components is clear. The controller modifies the view and the model directly. The View talks to the Controller by IBActions, the View Could talk to the Controller by observers or delegates, but it will come later in this article.
 
-```
+```swift
 // MARK: - Model
 public struct Address {
   public var street: String
@@ -182,7 +182,7 @@ The delegation pattern has 3 parts:
 <img src="./resources/14.png" height="100"/> 
 
 ### Basic example
-```
+```swift
 // MARK: - Delegate
 public class MainViewController: UIViewController {
     public override func viewDidLoad() {
@@ -243,7 +243,7 @@ This pattern has 3 parts.
 
 The following example shows this pattern in action, basically the strategies are helper classes that conform to the same protocol which means that the protocol methods will be the same but the logic in each strategy is different according to the needs. 
 
-```
+```swift
 // MARK: - Strategy Protocol
 public protocol MovieRatingStrategy {
   
@@ -338,7 +338,7 @@ public class MoviewRatingViewController: UIViewController {
 
 ### Basic Example
 
-```
+```swift
 // MARK: - Singleton
 public class MySingleton {
   static let shared = MySingleton()
@@ -388,7 +388,7 @@ This patters has 3 parts.
 
 ### Basic Example
 
-```
+```swift
 // MARK: - Originator
 public class Game: Codable {
   
@@ -470,7 +470,7 @@ These are the types involved in this pattern:
 
 ### Basic Example
 
-```
+```swift
 import Combine
 
 // MARK: - Publisher
@@ -518,7 +518,7 @@ This pattern involved 3 types.
 
 The following example shows this pattern in action for a hamburger builder where the director is a chef or employee and the product is a builder. The builder object is contains the logic required to deliver fresh and delicious hamburgers. In this way the hamburger object is isolated from the complex logic that required preparing a nice burger.
 
-```
+```swift
 // MARK: - Product
 public struct Hamburger {
   public let meat: Meat
@@ -665,7 +665,7 @@ Objects are separated into three distinct groups:
 ### Basic Example
 The following is a simple example of MVVM pattern, in it we can see how the data to display is obtained in the view model.
 
-```
+```swift
 import PlaygroundSupport
 import UIKit
 
@@ -751,7 +751,7 @@ This pattern involves two types:
 - If the creation of an object requires a series of steps.
 
 ### Basic Example
-```
+```swift
 public struct JobApplicant {
   public enum Status {
     case new
@@ -846,7 +846,7 @@ We can create an adapter by using an extension ot a new adapter class.
 
 ### Basic Example
 
-```
+```swift
 // MARK: - Legacy Object
 public class GoogleAuthenticator {
   
@@ -945,7 +945,7 @@ Prefer to use the Sequence protocol to get higher order functions for free.
 
 The following example shows the usage of this pattern. The **Swift Iterable Protocol** is the protocol _Sequence_ and the **Iterator Object** is Queue.
 
-```
+```swift
 public struct Queue<T> {
   private var array: [T?] = []
   private var head = 0
@@ -1064,7 +1064,7 @@ It isn't a good idea to allow create instances from other instances where force 
 </pre>
 
 
-```
+```swift
 // MARK:- Copying Protocol
 public protocol Copying: class {
   init(_ prototype: Self)
@@ -1141,7 +1141,7 @@ On this pattern states can be switch with polymorphism and we wouldn't need to u
 
 ### Basic Example
 
-```
+```swift
 import UIKit
 import PlaygroundSupport
 
@@ -1315,7 +1315,7 @@ This pattern works best only to inform to delegates "calls". It doesn't work wel
 
 #### MulticastDelegate<T> custom class
 
-```
+```swift
 public class MulticastDelegate<T> {
   
   // MARK: - DelegateWrapper
@@ -1361,7 +1361,7 @@ public class MulticastDelegate<T> {
 
 ### Multicast Delegate in action
 
-```
+```swift
 // MARK: - Delegate Protocol
 public protocol EmergencyResponding {
   func notifyFire(at location: String)
@@ -1434,7 +1434,7 @@ This pattern involves four types:
 
 ### Basic Example
 
-```
+```swift
 import Foundation
 
 // MARK: Some model
