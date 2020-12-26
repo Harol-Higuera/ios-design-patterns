@@ -1288,7 +1288,129 @@ let greenYellowRed: [SolidTrafficLightState] = [.greenLight(), .yellowLight(), .
 PlaygroundPage.current.liveView = TrafficLight(states: greenYellowRed)
 ```
 
+___
+## Multicast pattern
 
+<pre>
+🥎 This pattern is a behavioral pattern, a variation of the delegate pattern that  allows to create One to Many delegate relationships.
+</pre>
+
+<img src="./resources/26.png" height="230"/> 
+
+This pattern involves four types:
+- **Object needing a delegate:** The object that has one or more delegates.
+- **Multicast delegate:** Helper class that holds onto the delegates and allows to notify each delegate whenever an event happens.
+- **Delegate protocol:** Defines methods the delegate might or should implement.
+- **Concrete delegates:** Objects that implement the delegate protocol.
+
+### When should we use this pattern?
+
+- When we need to create One to Many delegate relationships. (For example when we need to notify multiple consumers whenever a change happens on another object.) Each delegate can then update its state or perform relevant actions in response.
+
+<pre>
+This pattern works best only to inform to delegates "calls". It doesn't work well the other way around because if asking the delegates for data it could result on duplicate information or too much processing. Instead, consider <strong style="color: #A9DFBF;">chain-of-responsibility pattern</strong>.
+</pre>
+
+### Basic Example
+
+#### MulticastDelegate<T> custom class
+
+```
+public class MulticastDelegate<T> {
+  
+  // MARK: - DelegateWrapper
+  private class DelegateWrapper {
+    
+    weak var delegate: AnyObject?
+    
+    init(_ delegate: AnyObject) {
+      self.delegate = delegate
+    }
+  }
+  
+  // MARK: - Instance Properties
+  public var delegates: [T] {
+    delegateWrappers = delegateWrappers.filter { $0.delegate != nil }
+    return delegateWrappers.map { $0.delegate! } as! [T]
+  }
+  private var delegateWrappers: [DelegateWrapper] = []
+  
+  // MARK: - Object Lifecycle
+  public init() { }
+  
+  // MARK: - Delegate Management
+  public func addDelegate(_ delegate: T) {
+    let wrapper = DelegateWrapper(delegate as AnyObject)
+    delegateWrappers.append(wrapper)
+  }
+  
+  public func removeDelegate(_ removeDelegate: T) {
+    guard let index = delegateWrappers.firstIndex(where: {
+      $0.delegate === (removeDelegate as AnyObject)
+    }) else {
+      return
+    }
+    delegateWrappers.remove(at: index)
+  }
+  
+  public func invokeDelegates(_ closure: (T) -> ()) {
+    delegates.forEach { closure($0) }
+  }
+}
+```
+
+### Multicast Delegate in action
+
+```
+// MARK: - Delegate Protocol
+public protocol EmergencyResponding {
+  func notifyFire(at location: String)
+  func notifyCarCrash(at location: String)
+}
+
+// MARK: - Delegates
+public class FireStation: EmergencyResponding {
+  public func notifyFire(at location: String) {
+    print("Fire fighters were notified about fire at " + location)
+  }
+  
+  public func notifyCarCrash(at location: String) {
+    print("Fire fighters were notified about a car crash at " + location)
+  }
+}
+
+public class PoliceStation: EmergencyResponding {
+  public func notifyFire(at location: String) {
+    print("Police will respond to fire at " + location)
+  }
+  
+  public func notifyCarCrash(at location: String) {
+    print("Police will assist with car crash at " + location)
+  }
+}
+
+// MARK: - Delegating Object
+public class DispatchSystem {
+  let multicastDelegate = MulticastDelegate<EmergencyResponding>()
+}
+
+// MARK: - Example
+let dispatch = DispatchSystem()
+var policeStation: PoliceStation! = PoliceStation()
+var fireStation: FireStation! = FireStation()
+dispatch.multicastDelegate.addDelegate(policeStation)
+dispatch.multicastDelegate.addDelegate(fireStation)
+
+dispatch.multicastDelegate.invokeDelegates {
+  $0.notifyFire(at: "Ray's house")
+}
+
+print("")
+fireStation = nil
+dispatch.multicastDelegate.invokeDelegates {
+  $0.notifyCarCrash(at: "Ray's garage!")
+}
+```
 
 
 
