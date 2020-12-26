@@ -3,30 +3,34 @@
 
 _This article is informative and does not have the purpose to strictly force developers to follow this patterns for the development of real iOS applications. However, it might be a good idea to understand them and considering using them for your particular problems._
 
-
+&nbsp;
 # Table of Contents
-- [Types of Design Patterns](#types-of-patterns)
-- [Class Diagrams](#class_diagrams)
-1. [Model-View-Controller](#mvc)
-2. [Delegation Pattern](#delegation_pattern)
-3. [Strategy Pattern](#strategy_pattern)
-4. [Singleton Pattern](#singleton_pattern)
-5. [Memento Pattern](#memento_pattern)
-6. [Observer Pattern](#observer_pattern)
-7. [Builder Pattern](#builder_pattern)
-8. [Model-View-View-Model](#mvvm)
-9. [Factory Pattern](#factory_pattern)
-10. [Adapter Pattern](#adapter_pattern)
-11. [Iterator Pattern](#iterator_pattern)
-12. [Prototype Pattern](#prototype_pattern)
-13. [State Pattern](#state_pattern)
-14. [Multicast Pattern](#multicast_pattern)
-15. [Facade Pattern](#facade_pattern)
-- [Questions and answers](#questions_and_answers)
+- [Types of Design Patterns](#types-of-design-patterns)
+- [Class Diagrams](#class-diagrams)
+&nbsp;
+1. [Model View Controller](#model-view-controller)
+2. [Delegation Pattern](#delegation-pattern)
+3. [Strategy Pattern](#strategy-pattern)
+4. [Singleton Pattern](#singleton-pattern)
+5. [Memento Pattern](#memento-pattern)
+6. [Observer Pattern](#observer-pattern)
+7. [Builder Pattern](#builder-pattern)
+8. [Model View View Model](#model-view-view-model)
+9. [Factory Pattern](#factory-pattern)
+10. [Adapter Pattern](#adapter-pattern)
+11. [Iterator Pattern](#iterator-pattern)
+12. [Prototype Pattern](#prototype-pattern)
+13. [State Pattern](#state-pattern)
+14. [Multicast Pattern](#multicast-pattern)
+15. [Facade Pattern](#facade-pattern)
+&nbsp;
+- [Questions and answers](#questions-and-answers)
 
+&nbsp;
 
-## <strong style="color: orange">1. Types of Design Patterns</strong> <a name="types-of-patterns"></a>
-
+---
+## Types of Design Patterns
+&nbsp;
 
 1. **Structural**: Describe how objects are combined and composed to create complex structures. 
 - MVC
@@ -42,8 +46,11 @@ _This article is informative and does not have the purpose to strictly force dev
 - Singleton
 - Prototype
 
+&nbsp;
+
 ---
-## <strong style="color: orange">2. Class Diagrams</strong> <a name="class_diagrams"></a>
+## Class Diagrams
+&nbsp;
 
 As in this article, class diagrams are very useful for understanding Design patterns, so let's go through the require concepts that you already might be familiar with.
 
@@ -97,9 +104,11 @@ Option 1 | Option 2
 ------------ | -------------
 <img src="./resources/11.png" height="200"/>  | <img src="./resources/12.png" height="150"/> 
 
----
-## <strong style="color: orange">3. Model-View-Controller</strong> <a name="mvc"></a>
+&nbsp;
 
+---
+## Model View Controller
+&nbsp;
 <pre>
 MVC is the Apple design pattern in the UIKit.
 </pre>
@@ -189,9 +198,11 @@ public final class AddressViewController: UIViewController {
 - Be careful about controllers growing too big.
 - Use other patterns as needed.
 ```
----
-## <strong style="color: orange">3. Delegation Pattern</strong> <a name="delegation_pattern"></a>
+&nbsp;
 
+---
+## Delegation Pattern
+&nbsp;
 <pre>
 🥎 This pattern enables an object to use another helper object to provide data or perform a task rather than doing it itself.
 🥎 The core purpose of the delegate pattern is to allow an object to communicate back to its owner in a decoupled way. By not requiring an object to know the concrete type of its owner, we can write code that is much easier to reuse and maintain.
@@ -242,9 +253,11 @@ public class MenuViewController: UIViewController {
 1. To break up large classes or create reusable components.
 2. In Apple frameworks datasources and delagates both use this pattern. (FYI, Datasources have delegate methods to **provide** data and delegates have delegates methods that **receive** data).
 
----
-## <strong style="color: orange">3. Strategy Pattern</strong> <a name="strategy_pattern"></a>
+&nbsp;
 
+---
+## Strategy Pattern
+&nbsp;
 <pre>
 🥎 This pattern defines a family of interchangeable objects that can be set or switch at runtime.
 🥎 This pattern is similar to the Delegate pattern but, instead of defining one delegate we have a family of objects.
@@ -344,9 +357,11 @@ public class MoviewRatingViewController: UIViewController {
   }
 }
 ```
----
-## <strong style="color: orange">4. Singleton Pattern</strong> <a name="singleton_pattern"></a>
+&nbsp;
 
+---
+## Singleton Pattern
+&nbsp;
 <pre>
 🥎 This pattern restricts a class to a single instance. Every reference to the class refers to the same underlined instance.
 </pre>
@@ -390,9 +405,11 @@ let singletonPlus2 = MySingletonPlus()
 - Be aware of "code smells" indicating you don't need a singleton.
 - Singleton Plus might not be a good idea. Consider using simple class objects.
 
----
-## <strong style="color: orange">5. Memento Pattern</strong> <a name="memento_pattern"></a>
+&nbsp;
 
+---
+## Memento Pattern
+&nbsp;
 <pre>
 🥎 This pattern allows an object to be saved and restored.
 </pre>
@@ -477,10 +494,11 @@ print("New Game Score: \(game.state.score)")
 game = try! gameSystem.load(title: "Best Game Ever")
 print("Loaded Game Score: \(game.state.score)")
 ```
+&nbsp;
 
 ---
-## <strong style="color: orange">6. Observer Pattern</strong> <a name="observer_pattern"></a>
-
+## Observer Pattern
+&nbsp;
 <pre>
 🥎 This pattern allows an object to observe changes on another object. Apple added support for this pattern in Swift 5.1 with the additional Publisher in the Combine framework.
 </pre>
@@ -523,9 +541,11 @@ user.name = "Ray has left the building"
 - Don't use on simple models or properties that never change.
 - Be sure about what to expect to change and when.
 
----
-## <strong style="color: orange">7. Builder Pattern</strong> <a name="builder_pattern"></a>
+&nbsp;
 
+---
+## Builder Pattern
+&nbsp;
 <pre>
 🥎 This pattern allows us to create complex objects by providing inputs step by step instead of requiring all the inputs upfront in the initializer.
 🥎 Use it when building a product that requires multiple inputs. 
@@ -668,10 +688,11 @@ if let kittenBurger = try?
   print("Sorry, no kitten burgers here... :[")
 }
 ```
+&nbsp;
 
 ---
-## <strong style="color: orange">8. Model-View-View-Model</strong> <a name="mvvm"></a>
-
+## Model View View Model
+&nbsp;
 <pre>
 🥎 MVVM can be also applied as structural pattern in iOS to separate the UI from the logic.
 🥎 This pattern complements MVC well by moving transformation logic out of the view controllers.
@@ -757,9 +778,11 @@ let view = PersonView(frame: frame)
 viewModel.configure(view)
 PlaygroundPage.current.liveView = view
 ```
----
-## <strong style="color: orange">9. Factory Pattern</strong> <a name="factory_pattern"></a>
+&nbsp;
 
+---
+## Factory Pattern
+&nbsp;
 <pre>
 🥎 This patterns allows creation of objects without exposing the creation logic.
 </pre>
@@ -848,10 +871,11 @@ print(emailFactory.createEmail(to: jackson), "\n")
 ### Considerations
 - If the objects are very simple it is not worth to use this pattern. Instead, it could be created directly in the consumer.
 
+&nbsp;
 
 ---
-## <strong style="color: orange">10. Adapter Pattern</strong> <a name="adapter_pattern"></a>
-
+## Adapter Pattern
+&nbsp;
 <pre>
 🥎 This patterns is a behavioral pattern that allows incompatible types to work together.
 </pre>
@@ -947,9 +971,11 @@ authService.login(
   }
 })
 ```
----
-## <strong style="color: orange">11. Iterator Pattern</strong> <a name="iterator_pattern"></a>
+&nbsp;
 
+---
+## Iterator Pattern
+&nbsp;
 <pre>
 🥎 This patterns is a behavioral pattern provides a standard way to loop through collections.
 </pre>
@@ -1049,8 +1075,11 @@ for ticket in sortedTickets {
 
 Read more about it. https://developer.apple.com/documentation/swift/iteratorprotocol
 
+&nbsp;
+
 ---
-## <strong style="color: orange">12. Prototype Pattern</strong> <a name="prototype_pattern"></a>
+## Prototype Pattern
+&nbsp;
 
 <pre>
 🥎 This pattern is a creational pattern that allows an object to copy itself.
@@ -1140,8 +1169,11 @@ print("Eww! It's eyeball redness is \(eyeball2.redness)!")
 
 let eyeballMonster3 = EyeballMonster(monster)
 ```
+&nbsp;
+
 ---
-## <strong style="color: orange">13. State Pattern</strong> <a name="state_pattern"></a>
+## State Pattern
+&nbsp;
 
 <pre>
 🥎 This pattern is a behavioral pattern that allows an object to change its behavior on runtime.
@@ -1311,9 +1343,11 @@ let greenYellowRed: [SolidTrafficLightState] = [.greenLight(), .yellowLight(), .
 PlaygroundPage.current.liveView = TrafficLight(states: greenYellowRed)
 ```
 
----
-## <strong style="color: orange">14. Multicast Pattern</strong> <a name="multicast_pattern"></a>
+&nbsp;
 
+---
+## Multicast Pattern
+&nbsp;
 
 <pre>
 🥎 This pattern is a behavioral pattern, a variation of the delegate pattern that  allows to create One to Many delegate relationships.
@@ -1436,8 +1470,11 @@ dispatch.multicastDelegate.invokeDelegates {
 }
 ```
 
+&nbsp;
+
 ---
-## <strong style="color: orange">15. Facade Pattern</strong> <a name="facade_pattern"></a>
+## Facade Pattern
+&nbsp;
 
 <pre>
 🥎 This pattern is a structure pattern that provides a simple interface to a complex system.
@@ -1556,9 +1593,12 @@ let customer = Customer(identifier: "customer-001",
 orderFacade.placeOrder(for: vickiPoodle, by: customer)
 ```
 
+&nbsp;
 
 ---
-## <strong style="color: orange">Questions and Answers</strong> <a name="questions_and_answers"></a>
+## Questions and Answers
+&nbsp;
+
 
 N | Question | Answer
 -- | ----------- | -------------
