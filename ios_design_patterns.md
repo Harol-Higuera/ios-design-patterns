@@ -1503,6 +1503,11 @@ This pattern involves four types:
 
 - Whenever there is a system made up by multiple components and want to provide a way to Users to perform complex tasks. (For example a product ordering system, that involves components such as customers, inventory stock, shipping orders etc..)
 
+<pre>
+Caution ⚠️
+Avoid creating facades types that know most of the other types in a system. These can be called God Facade. Instead, create different Facades for different uses.
+</pre>
+
 ### Basic Example
 
 ```swift
