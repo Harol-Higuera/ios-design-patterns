@@ -1025,6 +1025,269 @@ for ticket in sortedTickets {
 Read more about it. https://developer.apple.com/documentation/swift/iteratorprotocol
 
 
+___
+## Prototype pattern
+
+<pre>
+🥎 This pattern is a creational pattern that allows an object to copy itself.
+</pre>
+
+<img src="./resources/24.png" height="230"/> 
+
+This pattern involves two types:
+- **Copying Protocol:** Declares copy methods.
+- **Prototype:** Conforms to the Copying protocol.
+
+There are two types of copies: Shallow and Deep.
+- Shallow: Creates a new object instance but does not copy its properties. Like when coping a reference type.
+- Deep: Creates a new object instance including copy of its properties.
+
+<pre>
+FYI
+
+<em style="color: green;">Reference types</em>
+They are not copied when they are assigned to a variable constant, or when passed to a function. Rather than a copy, a reference to the same existing instance is used.
+<strong style="color: yellow;">Classes are reference types.</strong>
+
+<em style="color: green;">Value types</em>
+Is a type whose value is copied when it's assigned to a variable constant, or when it's passed to a function as parameter. 
+<strong style="color: yellow;">Structs and Enums are value types.</strong>
+</pre>
+
+### When yo use this pattern?
+- When we need to enable an object to copy itself. NSCoping is not great in Swift. Sometimes creating our own copying protocol would be more swift-y.
+
+### Basic Example
+The following example show how can we make our own Copying protocol and implement a custom copy mechanism. 
+<pre>
+It isn't a good idea to allow create instances from other instances where force casting is required. See example.
+</pre>
+
+
+```
+// MARK:- Copying Protocol
+public protocol Copying: class {
+  init(_ prototype: Self)
+}
+extension Copying {
+  public func copy() -> Self {
+    return type(of: self).init(self)
+  }
+}
+
+public class Monster: Copying {
+  public var health: Int
+  public var level: Int
+  public init(health: Int, level: Int) {
+    self.health = health
+    self.level = level
+  }
+  public required convenience init(_ prototype: Monster) {
+    self.init(health: prototype.health, level: prototype.level)
+  }
+}
+
+public class EyeballMonster: Monster {
+  public var redness = 0
+  public override convenience init(health: Int, level: Int) {
+    self.init(health: health, level: level, redness: 0)
+  }
+  public init(health: Int, level: Int, redness: Int) {
+    self.redness = redness
+    super.init(health: health, level: level)
+  }
+  
+  @available(*, unavailable, message: "Call copy() instead")
+  public required convenience init(_ prototype: Monster) {
+    let eyeballMonster = prototype as! EyeballMonster
+    self.init(health: eyeballMonster.health,
+              level: eyeballMonster.level,
+              redness: eyeballMonster.redness)
+  }
+}
+
+let monster = Monster(health: 700, level: 37)
+let monster2 = monster.copy()
+print("Watch out! That monster's level is \(monster2.level)")
+
+let eyeball = EyeballMonster(health: 3002, level: 60, redness: 999)
+let eyeball2 = eyeball.copy()
+print("Eww! It's eyeball redness is \(eyeball2.redness)!")
+
+let eyeballMonster3 = EyeballMonster(monster)
+```
+
+___
+## State pattern
+
+<pre>
+🥎 This pattern is a behavioral pattern that allows an object to change its behavior on runtime.
+</pre>
+
+<img src="./resources/25.png" height="230"/> 
+
+This pattern involves three types:
+- **Context:** Is the object that has a current state and whose behavior changes.
+- **State Protocol:** Defines required methods and properties. 
+- **Concrete State:** Conforms to the state protocol. The context holds onto its current state but it doesn't know it is a 'concrete state' type. Instead the context uses behavior using polymorphism. Concrete states defines how the context should act. If we need a new behavior we define a new Concrete State.
+
+### When should we use this pattern?
+
+- When we have a system with two or more states that change during its lifetime. States can close sets (Like traffic lights) or open sets (Like animations etc.)  
+
+<pre>
+On this pattern states can be switch with polymorphism and we wouldn't need to use Switch or if/else statements.
+</pre>
+
+### Basic Example
+
+```
+import UIKit
+import PlaygroundSupport
+
+// MARK: - Context
+public class TrafficLight: UIView {
+  public private(set) var canisterLayers: [CAShapeLayer] = []
+  public private(set) var currentState: TrafficLightState
+  public private(set) var states: [TrafficLightState]
+  
+  public var nextState: TrafficLightState {
+    guard let index = states.firstIndex(where: { $0 === currentState}),
+      index + 1 < states.count else {
+        return states.first!
+    }
+    return states[index + 1]
+  }
+  
+  @available(*, unavailable)
+  public required init?(coder: NSCoder) {
+    fatalError()
+  }
+  
+  public init(canisterCount: Int = 3,
+              frame: CGRect = CGRect(x: 0, y: 0, width: 160, height: 420),
+              states: [TrafficLightState]) {
+    guard !states.isEmpty else {
+      fatalError()
+    }
+    self.currentState = states.first!
+    self.states = states
+    super.init(frame: frame)
+    backgroundColor = UIColor(red: 0.86, green: 0.64, blue: 0.25, alpha: 1)
+    createCanisterLayers(count: canisterCount)
+    transition(to: currentState)
+  }
+  
+  private func createCanisterLayers(count: Int) {
+    let paddingPercentage: CGFloat = 0.2
+    let yTotalPadding = paddingPercentage * bounds.height
+    let yPadding = yTotalPadding / CGFloat(count + 1)
+    
+    let canisterHeight = (bounds.height - yTotalPadding) / CGFloat(count)
+    let xPadding = (bounds.width - canisterHeight) / 2.0
+    var canisterFrame = CGRect(x: xPadding, y: yPadding,
+                               width: canisterHeight, height: canisterHeight)
+    
+    for _ in 0 ..< count {
+      let canisterShape = CAShapeLayer()
+      canisterShape.path = UIBezierPath(ovalIn: canisterFrame).cgPath
+      canisterShape.fillColor = UIColor.black.cgColor
+      layer.addSublayer(canisterShape)
+      canisterLayers.append(canisterShape)
+      canisterFrame.origin.y += (canisterFrame.height + yPadding)
+    }
+  }
+  
+  // Use to transit between states.
+  public func transition(to state: TrafficLightState) {
+    removeCanisterSublayers()
+    currentState = state
+    currentState.apply(to: self)
+    nextState.apply(to: self, after: currentState.delay)
+  }
+  
+  private func removeCanisterSublayers() {
+    canisterLayers.forEach { $0.sublayers?.forEach { $0.removeFromSuperlayer() } }
+  }
+}
+
+// MARK: - State Protocol
+public protocol TrafficLightState: class {
+  var delay: TimeInterval { get }
+  
+  func apply(to context: TrafficLight)
+}
+extension TrafficLightState {
+  public func apply(to context: TrafficLight, after delay: TimeInterval) {
+    let queue = DispatchQueue.main
+    let dispatchTime = DispatchTime.now() + delay
+    queue.asyncAfter(deadline: dispatchTime) { [weak self, weak context] in
+      guard let self = self, let context = context else { return }
+      context.transition(to: self)
+    }
+  }
+}
+
+// MARK: - Concrete States
+/*
+ Access the traffic light's canister light itself.
+ */
+public class SolidTrafficLightState {
+  public let canisterIndex: Int
+  public let color: UIColor
+  public let delay: TimeInterval
+  
+  public init(canisterIndex: Int,
+              color: UIColor,
+              delay: TimeInterval) {
+    self.canisterIndex = canisterIndex
+    self.color = color
+    self.delay = delay
+  }
+}
+
+
+extension SolidTrafficLightState: TrafficLightState {
+  public func apply(to context: TrafficLight) {
+    let canisterLayer = context.canisterLayers[canisterIndex]
+    let circleShape = CAShapeLayer()
+    circleShape.path = canisterLayer.path!
+    circleShape.fillColor = color.cgColor
+    circleShape.strokeColor = color.cgColor
+    canisterLayer.addSublayer(circleShape)
+  }
+}
+
+// MARK: Polymorphism in action💪🏼.
+// Create SolidTrafficLightState objects in different ways.
+extension SolidTrafficLightState {
+  
+  public class func greenLight(
+    canisterIndex: Int = 2,
+    color: UIColor = UIColor(red: 0.21, green: 0.78, blue: 0.35, alpha: 1.0),
+    delay: TimeInterval = 1.0) -> SolidTrafficLightState {
+    return SolidTrafficLightState(canisterIndex: canisterIndex, color: color, delay: delay)
+  }
+  
+  public class func yellowLight(
+    canisterIndex: Int = 1,
+    color: UIColor = UIColor(red: 0.98, green: 0.91, blue: 0.07, alpha: 1.0),
+    delay: TimeInterval = 1.0) -> SolidTrafficLightState {
+    return SolidTrafficLightState(canisterIndex: canisterIndex, color: color, delay: delay)
+  }
+  
+  public class func redLight(
+    canisterIndex: Int = 0,
+    color: UIColor = UIColor(red: 0.88, green: 0.0, blue: 0.04, alpha: 1.0),
+    delay: TimeInterval = 1.0) -> SolidTrafficLightState {
+    return SolidTrafficLightState(canisterIndex: canisterIndex, color: color, delay: delay)
+  }
+}
+
+let greenYellowRed: [SolidTrafficLightState] = [.greenLight(), .yellowLight(), .redLight()]
+PlaygroundPage.current.liveView = TrafficLight(states: greenYellowRed)
+```
+
 
 
 
