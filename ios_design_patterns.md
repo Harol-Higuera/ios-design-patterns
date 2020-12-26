@@ -1413,6 +1413,127 @@ dispatch.multicastDelegate.invokeDelegates {
 ```
 
 
+___
+## Facade pattern
+
+<pre>
+🥎 This pattern is a structure pattern that provides a simple interface to a complex system.
+
+FYI: (/fəˈsɑːd/) The principal front of a building, that faces on to a street or open space.
+</pre>
+
+<img src="./resources/27.png" height="170"/> 
+
+This pattern involves four types:
+- **Facade:** Provides simple methods that interacts with the system. This allows consumers to use the Facede instead of knowing or interacting with multiple classes in the system.
+- **Dependencies:** Are objects own by the dacade. Each dependency performs a small part of a complex task.
+
+### When should we use this pattern?
+
+- Whenever there is a system made up by multiple components and want to provide a way to Users to perform complex tasks. (For example a product ordering system, that involves components such as customers, inventory stock, shipping orders etc..)
+
+### Basic Example
+
+```
+import Foundation
+
+// MARK: Some model
+public struct Product {
+  public let identifier: String
+  public var name: String
+  public var cost: Double
+}
+
+extension Product: Hashable {
+  public func hash(into hasher: inout Hasher) {
+    hasher.combine(identifier)
+  }
+  
+  public static func ==(lhs: Product, rhs: Product) -> Bool {
+    return lhs.identifier == rhs.identifier
+  }
+}
+
+// MARK: - Customer (External item that interacts with the Facade)
+public struct Customer {
+  public let identifier: String
+  public var address: String
+  public var name: String
+}
+extension Customer: Hashable {
+  public func hash(into hasher: inout Hasher) {
+    hasher.combine(identifier)
+  }
+  
+  public static func ==(lhs: Customer, rhs: Customer) -> Bool {
+    return lhs.identifier == rhs.identifier
+  }
+}
+
+// MARK: - Dependencies
+
+// MARK: - Dependencies - InventoryDatabase
+public class InventoryDatabase {
+  public var inventory: [Product: Int] = [:]
+  
+  public init(inventory: [Product: Int]) {
+    self.inventory = inventory
+  }
+}
+
+// MARK: - Dependencies - ShippingDatabase
+public class ShippingDatabase {
+  public var pendingShipments: [Customer: [Product]] = [:]
+}
+
+// MARK: - Facade
+public class OrderFacade {
+  public let inventoryDatabase: InventoryDatabase
+  public let shippingDatabase: ShippingDatabase
+  
+  public init(inventoryDatabase: InventoryDatabase,
+              shippingDatabase: ShippingDatabase) {
+    self.inventoryDatabase = inventoryDatabase
+    self.shippingDatabase = shippingDatabase
+  }
+  
+  public func placeOrder(for product: Product, by customer: Customer) {
+    print("Place order for '\(product.name)' by '\(customer.name)'")
+    
+    let count = inventoryDatabase.inventory[product, default: 0]
+    guard count > 0 else {
+      print("'\(product.name)' is out of stock!")
+      return
+    }
+    
+    inventoryDatabase.inventory[product] = count - 1
+    
+    var shipments = shippingDatabase.pendingShipments[customer, default: []]
+    shipments.append(product)
+    shippingDatabase.pendingShipments[customer] = shipments
+    
+    print("Order placed for '\(product.name)' by '\(customer.name)'")
+  }
+}
+
+// MARK: - Example
+let rayDoodle = Product(identifier: "product-001", name: "Ray's doodle", cost: 0.25)
+let vickiPoodle = Product(identifier: "product-002", name: "Vicki's prize poodle",
+                          cost: 1000)
+
+let inventoryDatabase = InventoryDatabase(inventory: [rayDoodle: 50, vickiPoodle: 1])
+
+let orderFacade = OrderFacade(inventoryDatabase: inventoryDatabase,
+                              shippingDatabase: ShippingDatabase())
+
+let customer = Customer(identifier: "customer-001",
+                        address: "1234 My Street Somwhereville, Somewhere, TX, USA",
+                        name: "Johnny Appleseed")
+
+orderFacade.placeOrder(for: vickiPoodle, by: customer)
+```
+
+
 
 ## Questions and Answers
 N | Question | Answer
