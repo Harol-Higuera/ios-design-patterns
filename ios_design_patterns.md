@@ -24,7 +24,7 @@ The design patterns described in this document are divided in three types.
  n| Type | Hint | Example 
 -- | ------------ | -------------  | ------------- 
 1 | [MVC](#model-view-controller) | The default Apple design pattern used in UIKit. | ViewControllers
-2 | [MVVM](#model-view-view-model) | Separates the UI from the logic. | -
+2 | [MVVM](#model-view-view-model) | Separates the UI from the logic. Enable us to transform models to display on a view. | -
 3 | [Facade](#facade-pattern) | Provides a simple interface to a complex system. | Product ordering system.
 
 &nbsp;
@@ -704,6 +704,7 @@ if let kittenBurger = try?
 &nbsp;
 <pre>
 🥎 MVVM can be also applied as structural pattern in iOS to separate the UI from the logic.
+🥎 This pattern enables us to transform models to display on a view.
 🥎 This pattern complements MVC well by moving transformation logic out of the view controllers.
 </pre>
 
@@ -1625,4 +1626,5 @@ N | Question | Answer
 11 | Which pattern should we use to support for in looping? | Iterator Pattern
 12 | What happens to view controllers in MVVM? | View Controllers still exists in MVVM but the role is minimized.
 13 | What is the purpose of the subject in the observer pattern? | The subject is the object that is observed for changes.
+14 | When should we use the prototype pattern? | To enable an object to be copyable.
 
